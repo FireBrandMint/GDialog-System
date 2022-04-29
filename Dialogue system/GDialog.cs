@@ -28,7 +28,7 @@ public class GDialog: IDisposable
         
     });
 
-    public GDialog (GDialogFunction[]? commands)
+    public GDialog (GDialogFunction[]? _commands)
     {
         stopwatch = new Stopwatch();
 
@@ -36,10 +36,11 @@ public class GDialog: IDisposable
 
         Commands.Add(new GDialogFunction("Wait", Wait));
         Commands.Add(new GDialogFunction("SetSpeed", CharPerSecond));
+        Commands.Add(new GDialogFunction("EndDialog", End));
 
-        if (commands!= null)
+        if (_commands != null)
         {
-            Commands.AddRange(commands);
+            Commands.AddRange(_commands);
         }
     }
 
@@ -58,7 +59,7 @@ public class GDialog: IDisposable
 
         if (NextDialog == null)
         {
-            OnEndEntireDialog();
+            if (OnEndEntireDialog != null) OnEndEntireDialog.Invoke();
             return;
         }
 
@@ -69,10 +70,7 @@ public class GDialog: IDisposable
         DialogRaw = nd.Invoke(args);
     }
 
-    protected virtual void OnEndEntireDialog ()
-    {
-        
-    }
+    public event Action? OnEndEntireDialog;
 
     protected void SetNextDialog(GStringString dialog) => NextDialog = dialog;
 
@@ -99,7 +97,7 @@ public class GDialog: IDisposable
 
         if (elapsed >= DialogDelayMS)
         {
-            while (elapsed - DialogDelayMS <= 0)
+            while (elapsed  >= DialogDelayMS)
             {
                 if (!Piece()) break;
 
@@ -126,6 +124,7 @@ public class GDialog: IDisposable
 
                 int currArg = 0;
                 List<string> args = new List<string>();
+                bool ArgsExist = false;
 
                 bool beforeParenthesis = true;
                 int i = 0;
@@ -140,6 +139,7 @@ public class GDialog: IDisposable
                         if (currChar == '(')
                         {
                             beforeParenthesis = false;
+                            ArgsExist = true;
                             continue;
                         }
 
@@ -166,6 +166,7 @@ public class GDialog: IDisposable
 
                 DialogIndex = i;
 
+                if (!ArgsExist) throw new Exception($"Command not spelled correctly on dialog {this.GetType().ToString()}!\n In the text \"{DialogRaw}\" exactly HERE: \"/{command}\"");
                 if (command.Length != 0) DialogPieced += ExecuteCommand(command, args.ToArray());
             }
         }
@@ -201,6 +202,8 @@ public class GDialog: IDisposable
     {
         Commands.Clear();
 
+        OnEndEntireDialog = null;
+
         NextDialog = null;
 
         stopwatch.Stop();
@@ -217,6 +220,13 @@ public class GDialog: IDisposable
     private string CharPerSecond(string[] args)
     {
         SetCharactersPerSecond(int.Parse(args[0]));
+        return "";
+    }
+
+    private string End(string[] args)
+    {
+        ChangeDialog(new string[0]);
+
         return "";
     }
 }
