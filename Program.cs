@@ -16,15 +16,15 @@ public class Program
             try
             {
                 Console.Clear();
+
+                Console.WriteLine(dialog.RetrieveDialog());
+
+                Thread.Sleep(16);
             }
             catch
             {
 
             }
-
-            Console.WriteLine(dialog.RetrieveDialog());
-
-            Thread.Sleep(16);
         }
     }
 }

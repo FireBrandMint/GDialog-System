@@ -72,7 +72,7 @@ public class GDialog: IDisposable
         DialogRaw = nd.Invoke(args);
     }
 
-    public event Action? OnEndWrite;
+    public event Action<GDialog>? OnEndWrite;
 
     public event Action? OnEndEntireDialog;
 
@@ -85,7 +85,7 @@ public class GDialog: IDisposable
         {
             if (DialogIndex != DialogRaw.Length + 5)
             {
-                if(OnEndWrite != null) OnEndWrite.Invoke();
+                if(OnEndWrite != null) OnEndWrite.Invoke(this);
 
                 DialogIndex = DialogRaw.Length + 5;
             }
