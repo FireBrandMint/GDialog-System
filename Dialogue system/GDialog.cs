@@ -31,17 +31,13 @@ public class GDialog: IDisposable
 
     List<GDialogFunction> Commands = new List<GDialogFunction>();
 
-    public GDialog (GDialogFunction[]? _commands)
+    public GDialog()
     {
         ResetDialog();
         stopwatch = new Stopwatch();
         InitDefaultCommands();
-
-        if (_commands != null)
-        {
-            Commands.AddRange(_commands);
-        }
     }
+    
     ///<summary>
     ///Reinitializes dialog if you want to reuse this object
     ///in the future. 
@@ -82,6 +78,11 @@ public class GDialog: IDisposable
         Commands.Add(new GDialogFunction("SetSpeed", CharPerSecond));
         Commands.Add(new GDialogFunction("EndDialog", End));
         Commands.Add(new GDialogFunction("SkipCharacters", Skip));
+    }
+
+    public void AddCommands(GDialogFunction[] _commands)
+    {
+        Commands.AddRange(_commands);
     }
 
     public void ResetDialogCommands() => InitDefaultCommands();

@@ -4,11 +4,6 @@ public class TestDialog1 : GDialog
 {
     bool testError = false;
 
-    public TestDialog1 (GDialogFunction[] commands) : base(commands)
-    {
-
-    }
-
     protected override string Start(string[] args)
     {
         SetCharactersPerSecond(12);

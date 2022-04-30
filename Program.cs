@@ -7,7 +7,7 @@ public class Program
 
     public static void Main(String[] args)
     {
-        TestDialog1 dialog = new TestDialog1(new GDialogFunction[0]);
+        TestDialog1 dialog = new TestDialog1();
 
         dialog.ChangeDialog();
         

@@ -6,8 +6,9 @@ the function, example: /Func(3)
 (if you want to have '/' in your text tough, type '//')
 
 You can set your own commands by providing an array of
-'GDialogFunction' in the initialization of a dialog containing
-the name of the command and the function the command executes.
+'GDialogFunction' in the execution of the 'AddCommands' method
+'GDialogFunction' is intialized with the name of the command you
+want to add and the function it executes.
 
 Also, there's default dialog commands!
 
