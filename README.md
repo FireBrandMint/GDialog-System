@@ -7,9 +7,9 @@ of the functions.
 
 How to install it:
 - Don't forget to leave a star on this project.
-- Copy the contents of the 'Dialogue system' folder into your project
+- Copy the contents of the 'Dialogue system' folder into your project.
 - You're good to go.
 
 How to use it:
-- Every dialogue must be inherited from the 'GDialog' class
+- Every dialogue must be inherited from the 'GDialog' class.
 - Learn how to use it by reading it, it's very easy once you understand it.
