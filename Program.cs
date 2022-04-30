@@ -3,9 +3,11 @@ using System.Threading;
 
 public class Program
 {
+    public static bool l = true;
+
     public static void Main(String[] args)
     {
-        var dialog = new TestDialog1(new GDialogFunction[0]);
+        TestDialog1 dialog = new TestDialog1(new GDialogFunction[0]);
 
         dialog.ChangeDialog();
         
@@ -17,7 +19,7 @@ public class Program
             }
             catch
             {
-                
+
             }
 
             Console.WriteLine(dialog.RetrieveDialog());
