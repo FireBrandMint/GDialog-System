@@ -15,6 +15,6 @@ public class TestDialog1 : GDialog
 
         if (testError) return "LOLLOLOLOLO WORKING /n hell yes!";
         
-        return "LOLLOLOLOLO WORKING \n/Wait(1000)hell yes!";
+        return "LOLLOLOLOLO WORKING \n/Wait(1000)hell /Wait(375)yes!";
     }
 }
