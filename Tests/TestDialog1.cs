@@ -11,10 +11,10 @@ public class TestDialog1 : GDialog
 
     protected override string Start(string[] args)
     {
-        SetCharactersPerSecond(2);
+        SetCharactersPerSecond(12);
 
         if (testError) return "LOLLOLOLOLO WORKING /n hell yes!";
         
-        return "LOLLOLOLOLO WORKING \n hell yes!";
+        return "LOLLOLOLOLO WORKING \n/Wait(1000)hell yes!";
     }
 }

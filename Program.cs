@@ -11,6 +11,15 @@ public class Program
         
         while(true)
         {
+            try
+            {
+                Console.Clear();
+            }
+            catch
+            {
+                
+            }
+
             Console.WriteLine(dialog.RetrieveDialog());
 
             Thread.Sleep(16);

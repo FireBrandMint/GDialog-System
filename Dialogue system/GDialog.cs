@@ -23,6 +23,8 @@ public class GDialog: IDisposable
 
     int WaitTime = 0;
 
+    bool DoNotTypeNextCharacter = false;
+
     List<GDialogFunction> Commands = new List<GDialogFunction>(new GDialogFunction[]
     {
         
@@ -86,6 +88,8 @@ public class GDialog: IDisposable
             if(elapsed > WaitTime)
             {
                 LastDialogMS += WaitTime;
+
+                elapsed -= WaitTime;
 
                 WaitTime = 0;
             }
@@ -171,6 +175,12 @@ public class GDialog: IDisposable
             }
         }
 
+        if (DoNotTypeNextCharacter)
+        {
+            DoNotTypeNextCharacter = false;
+            return true;
+        }
+
         if (DialogIndex >= DialogRaw.Length) return false;
 
         DialogPieced += DialogRaw[DialogIndex];
@@ -214,6 +224,7 @@ public class GDialog: IDisposable
     private string Wait (string[] args)
     {
         WaitTime = int.Parse(args[0]);
+        DoNotTypeNextCharacter = true;
         return "";
     }
 
