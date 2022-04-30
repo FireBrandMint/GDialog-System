@@ -17,7 +17,7 @@ public class GDialog: IDisposable
 
     Stopwatch stopwatch;
 
-    int DialogDelayMS = 0;
+    int DialogDelayMS = 1000;
 
     int LastDialogMS = 0;
 
@@ -25,33 +25,106 @@ public class GDialog: IDisposable
 
     bool DoNotTypeNextCharacter = false;
 
-    List<GDialogFunction> Commands = new List<GDialogFunction>(new GDialogFunction[]
-    {
-        
-    });
+    int SkipValue = 0;
+
+    bool ResetDialogAfterCompletion = true;
+
+    List<GDialogFunction> Commands = new List<GDialogFunction>();
 
     public GDialog (GDialogFunction[]? _commands)
     {
+        ResetDialog();
         stopwatch = new Stopwatch();
-
-        NextDialog = Start;
-
-        Commands.Add(new GDialogFunction("Wait", Wait));
-        Commands.Add(new GDialogFunction("SetSpeed", CharPerSecond));
-        Commands.Add(new GDialogFunction("EndDialog", End));
+        InitDefaultCommands();
 
         if (_commands != null)
         {
             Commands.AddRange(_commands);
         }
     }
+    ///<summary>
+    ///Reinitializes dialog if you want to reuse this object
+    ///in the future. 
+    ///Already happens altomatically when
+    ///the dialog ends before OnEndEntireDialog.
+    ///If you want to disable that you can call
+    ///SetResetDialog(false);
+    ///</summary>
+    public void ResetDialog ()
+    {
+        NextDialog = Start;
+        if (stopwatch.IsRunning) stopwatch.Stop();
+        if (stopwatch.ElapsedTicks>0) stopwatch.Reset();
 
+        SkipValue = 0;
+        DoNotTypeNextCharacter = false;
+        WaitTime = 0;
+        DialogDelayMS = 1000;
+        LastDialogMS = 0;
+        DialogRaw = "";
+        DialogPieced = "";
+        DialogIndex = 0;
+    }
+
+    ///<summary>
+    ///Sets wether or not the dialog should reinitialize
+    ///recreate itself after it's completion.
+    ///</summary>
+    public void SetResetDialog(bool doIt)
+    {
+        ResetDialogAfterCompletion = doIt;
+    }
+
+    private void InitDefaultCommands ()
+    {
+        Commands.Clear();
+        Commands.Add(new GDialogFunction("Wait", Wait));
+        Commands.Add(new GDialogFunction("SetSpeed", CharPerSecond));
+        Commands.Add(new GDialogFunction("EndDialog", End));
+        Commands.Add(new GDialogFunction("SkipCharacters", Skip));
+    }
+
+    public void ResetDialogCommands() => InitDefaultCommands();
+
+    ///<summary>
+    ///Sets dialog speed in a different way, it sets the amount
+    ///of milliseconds the system waits to type a character.
+    ///</summary>
     protected void SetDialogDelayMS (int dialogDelayMS) => DialogDelayMS = dialogDelayMS;
 
     protected void SetCharactersPerSecond(int speed) => SetDialogDelayMS(1000/speed);
 
+    ///<summary>
+    ///Sets the number of characters per second the system types.
+    ///If this isn't set at least one time, the system types 1
+    ///character per second, wich is very slow.
+    ///</summary>
+    protected void SetSpeed (int speed) => SetCharactersPerSecond(speed);
+
+    ///<summary>
+    ///This function must be called only when you advance
+    ///the dialog, example: the player is reading a texbox
+    ///and now he presses a button to go to the next textbox, this is
+    ///when this function should be called.
+    ///It calls the next dialog function with the string array
+    ///you can provide as argument here.
+    ///When this function is first called, it starts the dialog
+    ///by calling the 'Start' function, for more information see the description
+    ///of 'Start'.
+    ///</summary>
     public void ChangeDialog() => ChangeDialog(new string[0]);
 
+    ///<summary>
+    ///This function must be called only when you advance
+    ///the dialog, example: the player is reading a texbox
+    ///and now he presses a button to go to the next textbox, this is
+    ///when this function should be called.
+    ///It calls the next dialog function with the string array
+    ///you can provide as argument here.
+    ///When this function is first called, it starts the dialog
+    ///by calling the 'Start' function, for more information see the description
+    ///of 'Start'.
+    ///</summary>
     public void ChangeDialog(string[] args)
     {
         LastDialogMS = 0;
@@ -61,6 +134,7 @@ public class GDialog: IDisposable
 
         if (NextDialog == null)
         {
+            if (ResetDialogAfterCompletion) ResetDialog();
             if (OnEndEntireDialog != null) OnEndEntireDialog.Invoke();
             return;
         }
@@ -72,12 +146,36 @@ public class GDialog: IDisposable
         DialogRaw = nd.Invoke(args);
     }
 
+    ///Event that's called when the system
+    ///fully typed a dialog. Is disposed
+    ///when the dialog is disposed.
+    ///See Dispose method description for more
+    ///information.
     public event Action<GDialog>? OnEndWrite;
 
+    ///<summary>
+    ///Called when the dialog ends, very useful.
+    ///</summary>
     public event Action? OnEndEntireDialog;
 
+    ///<summary>
+    ///Sets the next dialog that should be executed
+    ///after calling ChangeDialog, if this function
+    ///isn't executed in the current dialog function
+    ///the dialog just ends. See: OnEndEntireDialog
+    ///</summary>
     protected void SetNextDialog(GStringString dialog) => NextDialog = dialog;
 
+    ///<summary>
+    //If this object is the current dialog
+    ///This function should be executed every frame,
+    ///and it's result should be the texbox's text.
+    ///It returns the dialog in it's current form,
+    ///being typed and everything, it also handles
+    ///everything in this system.
+    ///If the current dialog is fully typed it calls
+    ///OnEndWrite, for more information read it's description.
+    ///</summary>
     public string RetrieveDialog ()
     {
 
@@ -120,6 +218,15 @@ public class GDialog: IDisposable
                 elapsed -= DialogDelayMS;
 
                 LastDialogMS += DialogDelayMS;
+
+                if(SkipValue!=0)
+                {
+                    LastDialogMS-= DialogDelayMS * SkipValue;
+
+                    elapsed += DialogDelayMS * SkipValue;
+
+                    SkipValue = 0;
+                }
             }
         }
         
@@ -212,16 +319,34 @@ public class GDialog: IDisposable
             }
         }
 
-        return "";
+        throw new Exception($"Command called \"{command}\" doesn't exist!");
     }
 
+    ///<summary>
+    ///First dialog function called in ChangeDialog
+    ///Dialog functions return the dialog that should
+    ///be typed by the system in conjunction with executing
+    ///any code you would like before that, so you can make
+    ///systems of multiple choices etc.
+    ///SetNextDialog and SetSpeed should be called inside dialog functions,
+    ///see their description to know more.
+    ///ALSO: see dialog commands in the DialogCommands text file.
+    ///</summary>
     protected virtual string Start(string[] args)
     {
         return "";
     }
+
+    bool disposed = false;
     
+    ///<summary>
+    ///Should be called when this object should be deleted,
+    ///it cleans all events so no memory leaks occur.
+    ///</summary>
     public void Dispose()
     {
+        if(disposed) return;
+
         Commands.Clear();
 
         OnEndWrite = null;
@@ -231,6 +356,8 @@ public class GDialog: IDisposable
         NextDialog = null;
 
         stopwatch.Stop();
+
+        disposed = true;
 
         GC.SuppressFinalize(this);
     }
@@ -252,6 +379,13 @@ public class GDialog: IDisposable
     {
         ChangeDialog(new string[0]);
 
+        return "";
+    }
+
+    private string Skip(string[] args)
+    {
+        SkipValue = int.Parse(args[0]);
+        DoNotTypeNextCharacter=true;
         return "";
     }
 }

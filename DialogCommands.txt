@@ -1,0 +1,29 @@
+So, what are dialog commands?
+Dialog commands are functions that can be executed inside
+the dialog text!
+They can be called by having the character '/' followed by
+the function, example: /Func(3)
+(if you want to have '/' in your text tough, type '//')
+
+You can set your own commands by providing an array of
+'GDialogFunction' in the initialization of a dialog containing
+the name of the command and the function the command executes.
+
+Also, there's default dialog commands!
+
+Default dialog commands list:
+
+/Wait(int)
+Descryption: waits for the ammount of milliseconds
+specified in the argument to continue typing.
+
+/SetSpeed(int)
+Descryption: sets the character per second
+of the system on the fly.
+
+/EndDialog()
+Descryption: ends this dialog prematurely and skips to
+the next. (if there is any, otherwise it just ends the dialog)
+
+/SkipCharacters(int)
+Descryption: skips the ammount of character specified in the argument.
