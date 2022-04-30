@@ -72,6 +72,8 @@ public class GDialog: IDisposable
         DialogRaw = nd.Invoke(args);
     }
 
+    public event Action? OnEndWrite;
+
     public event Action? OnEndEntireDialog;
 
     protected void SetNextDialog(GStringString dialog) => NextDialog = dialog;
@@ -79,7 +81,17 @@ public class GDialog: IDisposable
     public string RetrieveDialog ()
     {
 
-        if (DialogIndex >= DialogRaw.Length) return DialogPieced;
+        if (DialogIndex >= DialogRaw.Length)
+        {
+            if (DialogIndex != DialogRaw.Length + 5)
+            {
+                if(OnEndWrite != null) OnEndWrite.Invoke();
+
+                DialogIndex = DialogRaw.Length + 5;
+            }
+
+            return DialogPieced;
+        }
 
         long elapsed = stopwatch.ElapsedMilliseconds - LastDialogMS;
 
@@ -211,6 +223,8 @@ public class GDialog: IDisposable
     public void Dispose()
     {
         Commands.Clear();
+
+        OnEndWrite = null;
 
         OnEndEntireDialog = null;
 
