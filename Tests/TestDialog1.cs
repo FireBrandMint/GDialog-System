@@ -18,6 +18,6 @@ public class TestDialog1 : GDialog
     string Dialog1(string[] args)
     {
         SetCharactersPerSecond(12);
-        return "Yes! Changing dialog is working too!";
+        return $"Yes! Changing dialog is working too! By the way, you typed \"{args[0]}\".";
     }
 }

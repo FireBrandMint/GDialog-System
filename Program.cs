@@ -4,18 +4,38 @@ using System.Threading;
 public class Program
 {
 
-    public static bool Read = false;
+    static bool Read = false;
+
+    static bool dialogEnded = false;
 
     public static void Main(String[] args)
     {
         TestDialog1 dialog = new TestDialog1();
 
         dialog.OnEndWrite += OnEndR;
+        dialog.OnEndEntireDialog+= OnEndDialog;
 
         dialog.ChangeDialog();
         
         while(true)
         {
+            if(dialogEnded)
+            {
+                try
+                {
+                    Console.Clear();
+                    Console.WriteLine("END OF DIALOG");
+                    Console.Write("> ");
+                    string? line = Console.ReadLine();
+                    if (line == "end") break;
+                }
+                catch
+                {
+
+                }
+                continue;
+            }
+
             try
             {
                 Console.Clear();
@@ -24,6 +44,7 @@ public class Program
 
                 if(Read)
                 {
+                    Console.Write("> ");
                     string? line = Console.ReadLine();
 
                     if(line == null)
@@ -44,5 +65,10 @@ public class Program
     public static void OnEndR(GDialog dlog)
     {
         Read = true;
+    }
+
+    public static void OnEndDialog ()
+    {
+        dialogEnded = true;
     }
 }
