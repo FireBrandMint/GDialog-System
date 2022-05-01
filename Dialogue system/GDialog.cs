@@ -33,6 +33,8 @@ public class GDialog: IDisposable
 
     public GDialog()
     {
+        stopwatch = new Stopwatch();
+
         ResetDialog();
         stopwatch = new Stopwatch();
         InitDefaultCommands();
@@ -129,6 +131,10 @@ public class GDialog: IDisposable
     public void ChangeDialog(string[] args)
     {
         LastDialogMS = 0;
+
+        DialogIndex = 0;
+        DialogRaw= "";
+        DialogPieced = "";
         
         if (stopwatch.ElapsedTicks == 0) stopwatch.Start();
         else stopwatch.Restart();

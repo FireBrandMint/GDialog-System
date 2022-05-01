@@ -1,0 +1,62 @@
+Here's the basic guide to making this dialog system work.
+(do not rely only on this text file, there's plenty of documentation on
+functions and etc)
+
+!To create a dialog:
+
+- To make your dialog, you need to 
+create a class inheriting from the 'GDialog' class.
+
+- there are things called 'dialog functions' wich
+are functions on the following format:
+'string NameHere (string[] args)',
+they return the dialog that the dialog system will type.
+
+- These dialog functions rely on the functions SetNextDialog(dialogFunction)
+to set the next dialog function that will be called to make the next textbox
+and SetSpeed(speed) to set the amount of characters per second.
+
+- IMPORTANT: if SetNextDialog(dialogFunction) is not executed within
+the dialog function, the next time you try to change dialog the dialog
+will end.
+
+- Of course you can execute something more on dialog functions, that's just
+a fact. You could make a multiple choice system with that!
+
+
+
+!To execute a dialog:
+
+- Put the RetrieveDialog function to execute every frame and
+the text of the textbox be equal to it, here's an example:
+if (CurrentDialog != null) textbox.text = CurrentDialog.RetrieveDialog();
+
+- Call the ChangeDialog() function for the first time to start the dialog.
+Example:
+ChangeDialog(new string[0]);
+
+- Now every time you want to skip to the next textbox, you must
+use the ChangeDialog function.
+(Remember that the string array you put into this function
+ends up in the dialog function that will be executed to make
+the dialog as a result from this function.)
+
+- The dialog just ends if the next dialog isn't set,
+i'm repeating this because it's very important.
+
+
+
+IMPORTANT INFORMATION:
+
+- Once the dialog ends the OnEndEntireDialog event
+is called, you can use it to organize your implementation.
+
+- Once the dialog ends it completely resets the object.
+It does not reset hoever the list of commands it has.
+(read about commands in the DialogCommands text file)
+
+- Once the dialog finishes writing the current dialog, it
+calls the OnEndWrite event.
+
+- To prevent memory leaks (a very bad problem) use the
+Dispose() method to free the memory. It erases all events.
