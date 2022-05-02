@@ -181,6 +181,9 @@ public class GDialog: IDisposable
     ///Skips dialog at a speed (characters per second)
     ///if you provide a int as argument,
     ///else it's just instantaneous.
+    ///While the dialog is being skipped a bool called
+    ///'SkippingDialog' is set to true, use this
+    ///information to correct potential bugs!
     ///</summary>
     public void SkipDialog(int speed)
     {
