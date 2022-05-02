@@ -31,6 +31,8 @@ public class GDialog: IDisposable
 
     List<GDialogFunction> Commands = new List<GDialogFunction>();
 
+    protected bool SkippingDialog = false;
+
     public GDialog()
     {
         stopwatch = new Stopwatch();
@@ -135,6 +137,8 @@ public class GDialog: IDisposable
         DialogIndex = 0;
         DialogRaw= "";
         DialogPieced = "";
+
+        SkippingDialog = false;
         
         if (stopwatch.ElapsedTicks == 0) stopwatch.Start();
         else stopwatch.Restart();
@@ -172,6 +176,32 @@ public class GDialog: IDisposable
     ///the dialog just ends. See: OnEndEntireDialog
     ///</summary>
     protected void SetNextDialog(GStringString dialog) => NextDialog = dialog;
+
+    ///<summary>
+    ///Skips dialog at a speed (characters per second)
+    ///if you provide a int as argument,
+    ///else it's just instantaneous.
+    ///</summary>
+    public void SkipDialog(int speed)
+    {
+        SetSpeed(speed);
+
+        SkippingDialog = true;
+    }
+
+    public void SkipDialog()
+    {
+        SkippingDialog = true;
+        
+        bool l = true;
+
+        while (l)
+        {
+            l = Piece();
+        }
+
+        SkippingDialog = false;
+    }
 
     ///<summary>
     //If this object is the current dialog
@@ -371,6 +401,8 @@ public class GDialog: IDisposable
 
     private string Wait (string[] args)
     {
+        if(SkippingDialog) return "";
+
         WaitTime = int.Parse(args[0]);
         DoNotTypeNextCharacter = true;
         return "";
@@ -378,6 +410,8 @@ public class GDialog: IDisposable
 
     private string CharPerSecond(string[] args)
     {
+        if(SkippingDialog) return "";
+
         SetCharactersPerSecond(int.Parse(args[0]));
         return "";
     }
