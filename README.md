@@ -6,7 +6,6 @@ It has a lot of documentation so you can learn it just by reading the descriptio
 of the functions.
 
 How to install it:
-- Don't forget to leave a star on this project.
 - Copy the contents of the 'Dialogue system' folder into your project.
 - You're good to go.
 
